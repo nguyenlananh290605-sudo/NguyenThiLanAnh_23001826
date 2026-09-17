@@ -1,4 +1,4 @@
-<?php 
+<?php
 $students = [
     [
         "name" => "Nguyen Van An",
@@ -21,17 +21,18 @@ $students = [
         "score" => 7.5
     ]
 ];
-$totalScore=0;
-$totalStudent= count($students);
+$totalScore = 0;
+$totalStudent = count($students);
 echo "Danh sách sinh viên: <br>";
 echo "------------------- <br>";
-foreach ($students as $student){
-    echo "Họ và tên: ".$student['name'] ." | Tuổi: ".$student['age']." | Điểm: ".$student['score']."<br>";
-    $totalScore+=$student['score'];
+foreach ($students as $student) {
+    echo "Họ và tên: " . $student['name'] . " | Tuổi: " . $student['age'] . " | Điểm: " . $student['score'] . "<br>";
+    $totalScore += $student['score'];
 }
 echo "------------------- <br>";
-if ($totalStudent>0){
-    $avgScore=$totalScore/$totalStudent;
-    echo"Điểm trung bình: ".$avgScore."<br>";
+if ($totalStudent > 0) {
+    $avgScore = $totalScore / $totalStudent;
+    echo "Điểm trung bình: " . $avgScore . "<br>";
 }
+
 ?>
