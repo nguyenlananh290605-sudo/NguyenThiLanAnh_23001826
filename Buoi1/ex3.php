@@ -25,44 +25,45 @@ $students = [
 /*
  findBestStudent($students): Tìm và trả về sinh viên có điểm cao nhất.
  findWorstStudent($students): Tìm và trả về sinh viên có điểm thấp nhất.
- countPassedStudents($students): Đếm số sinh viên đạt. Sinh viên đạt khi điểm &gt;= 5.
+ countPassedStudents($students): Đếm số sinh viên đạt. Sinh viên đạt khi điểm >= 5.
  findStudentByName($students, $name): Tìm sinh viên theo tên và trả về sinh viên tìm được.
 */
 function findBestStudent($students)
 {
-    if (empty($students))
-        return null;
-
     $best = $students[0];
 
     foreach ($students as $student) {
-        if ($best["score"] < $student["score"]) {
+        if ($student["score"] > $best["score"]) {
             $best = $student;
         }
     }
+
     return $best;
 }
+
 function findWorstStudent($students)
 {
-    if (empty($students))
-        return null;
-
     $worst = $students[0];
 
     foreach ($students as $student) {
-        if ($worst["score"] > $student["score"]) {
+        if ($student["score"] < $worst["score"]) {
             $worst = $student;
         }
     }
+
     return $worst;
 }
+
 function countPassedStudents($students)
 {
     $count = 0;
+
     foreach ($students as $student) {
-        if ($student["score"] > 5)
+        if ($student["score"] >= 5) {
             $count++;
+        }
     }
+
     return $count;
 }
 
@@ -73,6 +74,7 @@ function findStudentByName($students, $name)
             return $student;
         }
     }
+
     return null;
 }
 
@@ -92,5 +94,6 @@ echo "<br><b>Số sinh viên đạt (Điểm >= 5):</b> " . $passedCount . " sin
 
 $searchName = "Tran Thi Binh";
 $foundStudent = findStudentByName($students, $searchName);
-
+echo "<br><b>Sinh viên tìm được với tên " . $searchName . ":</b><br>";
+displayStudent($foundStudent);
 ?>
