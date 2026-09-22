@@ -30,6 +30,8 @@ $students = [
 */
 function findBestStudent($students)
 {
+    if (empty($students))
+        return null;
     $best = $students[0];
 
     foreach ($students as $student) {
@@ -43,6 +45,8 @@ function findBestStudent($students)
 
 function findWorstStudent($students)
 {
+    if (empty($students))
+        return null;
     $worst = $students[0];
 
     foreach ($students as $student) {
@@ -69,8 +73,10 @@ function countPassedStudents($students)
 
 function findStudentByName($students, $name)
 {
+    if (empty($students))
+        return null;
     foreach ($students as $student) {
-        if ($student["name"] == $name) {
+        if (strtolower($student["name"]) == strtolower($name)) {
             return $student;
         }
     }
@@ -92,8 +98,15 @@ $passedCount = countPassedStudents($students);
 echo "<br><b>Số sinh viên đạt (Điểm >= 5):</b> " . $passedCount . " sinh viên<br>";
 
 
-$searchName = "Tran Thi Binh";
+$searchName = "Tran Thi An";
 $foundStudent = findStudentByName($students, $searchName);
 echo "<br><b>Sinh viên tìm được với tên " . $searchName . ":</b><br>";
-displayStudent($foundStudent);
+if ($foundStudent != null) {
+    displayStudent($foundStudent);
+} else {
+    echo "Không tìm thấy sinh viên này trong danh sách.
+
+
+";
+}
 ?>
