@@ -40,14 +40,15 @@ function addProduct($name, $price, $quantity)
 {
     global $conn;
     try {
-        if (empty($name)) {
+        if (empty(trim($name))) {
             throw new InvalidArgumentException("Product name cannot be empty.");
         }
         if (!is_numeric($price) || $price <= 0) {
-            throw new InvalidArgumentException("Product price must be a non-negative number.");
+            throw new InvalidArgumentException("Product price must be greater than 0.");
         }
-        if (!is_numeric($quantity) || $quantity <= 0) {
-            throw new InvalidArgumentException("Product quantity must be a non-negative number.");
+        // SỬA: Thay $quantity <= 0 thành $quantity < 0 để cho phép nhập số lượng = 0
+        if (!is_numeric($quantity) || $quantity < 0) {
+            throw new InvalidArgumentException("Product quantity must be a non-negative integer (>= 0).");
         }
 
         $stmt = $conn->prepare("INSERT INTO products (name, price, quantity) VALUES (:name, :price, :quantity)");
@@ -58,7 +59,7 @@ function addProduct($name, $price, $quantity)
 
         $stmt->bindParam(':name', $trimmedName);
         $stmt->bindParam(':price', $floatPrice);
-        $stmt->bindParam(':quantity', $intQuantity);
+        $stmt->bindParam(':quantity', $intQuantity, PDO::PARAM_INT);
 
         return $stmt->execute();
     } catch (PDOException $e) {
@@ -74,14 +75,15 @@ function updateProduct($id, $name, $price, $quantity)
         if (!is_numeric($id) || $id <= 0) {
             throw new InvalidArgumentException("Invalid product ID: " . $id);
         }
-        if (empty($name)) {
+        if (empty(trim($name))) {
             throw new InvalidArgumentException("Product name cannot be empty.");
         }
         if (!is_numeric($price) || $price <= 0) {
-            throw new InvalidArgumentException("Product price must be a non-negative number.");
+            throw new InvalidArgumentException("Product price must be greater than 0.");
         }
-        if (!is_numeric($quantity) || $quantity <= 0) {
-            throw new InvalidArgumentException("Product quantity must be a non-negative number.");
+        // SỬA: Thay $quantity <= 0 thành $quantity < 0 để cho phép cập nhật số lượng = 0
+        if (!is_numeric($quantity) || $quantity < 0) {
+            throw new InvalidArgumentException("Product quantity must be a non-negative integer (>= 0).");
         }
 
         $stmt = $conn->prepare("UPDATE products SET name = :name, price = :price, quantity = :quantity WHERE id = :id");
@@ -93,12 +95,13 @@ function updateProduct($id, $name, $price, $quantity)
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->bindParam(':name', $trimmedName);
         $stmt->bindParam(':price', $floatPrice);
-        $stmt->bindParam(':quantity', $intQuantity);
+        $stmt->bindParam(':quantity', $intQuantity, PDO::PARAM_INT);
 
         return $stmt->execute();
     } catch (PDOException $e) {
         throw new Exception("Error updating product " . $id . ": " . $e->getMessage());
     }
+
 }
 
 // Function to delete a product from the database
