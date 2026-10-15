@@ -1,6 +1,11 @@
 <?php
-// Lấy tên file PHP hiện tại (VD: product_list.php hoặc product_add.php)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $currentPage = basename($_SERVER['SCRIPT_NAME']);
+$isLoggedIn = isset($_SESSION['user']);
+$currentUser = $isLoggedIn ? $_SESSION['user']['username'] : '';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -38,24 +43,49 @@ $currentPage = basename($_SERVER['SCRIPT_NAME']);
             <a class="navbar-brand" href="product_list.php">
                 <i class="fa-solid fa-cart-shopping me-2 text-primary"></i>Shopping Cart Admin
             </a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link <?php echo ($currentPage === 'product_list.php') ? 'active' : ''; ?>"
                             href="product_list.php">
                             <i class="fa-solid fa-list me-1"></i> Danh sách sản phẩm
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo ($currentPage === 'product_add.php') ? 'active' : ''; ?>"
-                            href="product_add.php">
-                            <i class="fa-solid fa-plus me-1"></i> Thêm mới
-                        </a>
-                    </li>
+                    <?php if ($isLoggedIn): ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($currentPage === 'product_add.php') ? 'active' : ''; ?>"
+                                href="product_add.php">
+                                <i class="fa-solid fa-plus me-1"></i> Thêm mới
+                            </a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
+
+                <!-- Khu vực tài khoản góc phải -->
+                <div class="d-flex align-items-center gap-2">
+                    <?php if ($isLoggedIn): ?>
+                        <span class="text-light me-2">
+                            <i class="fa-solid fa-user-circle me-1 text-info"></i>
+                            <?php echo htmlspecialchars($currentUser); ?>
+                        </span>
+                        <a href="logout.php" class="btn btn-outline-danger btn-sm"
+                            onclick="return confirm('Bạn có chắc chắn muốn đăng xuất?');">
+                            <i class="fa-solid fa-right-from-bracket me-1"></i> Đăng xuất
+                        </a>
+                    <?php else: ?>
+                        <a href="login.php" class="btn btn-outline-light btn-sm">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i> Đăng nhập
+                        </a>
+                        <a href="register.php" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-user-plus me-1"></i> Đăng ký
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </nav>
