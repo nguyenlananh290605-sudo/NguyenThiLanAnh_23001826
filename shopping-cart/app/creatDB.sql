@@ -15,3 +15,9 @@ INSERT INTO products (name, price, quantity) VALUES
 ('Bàn phím cơ AKKO', 1250000.00, 20),
 ('Màn hình LG 24 inch', 3200000.00, 15),
 ('Tai nghe Kingston HyperX', 990000.00, 30);
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
