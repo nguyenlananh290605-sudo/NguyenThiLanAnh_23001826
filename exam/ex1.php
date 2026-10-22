@@ -1,7 +1,7 @@
 <?php
 
 $Sname = "Nguyễn Thị Lan Anh";
-$Sscore = 8.5; 
+$Sscore = 8.5;  // 5 3 7
 if ($Sscore >= 8.0) {
     $ranking = "Giỏi";
 } elseif ($Sscore >= 6.5) {
