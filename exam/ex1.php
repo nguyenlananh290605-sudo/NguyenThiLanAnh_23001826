@@ -1,7 +1,13 @@
 <?php
 
 $Sname = "Nguyễn Thị Lan Anh";
-$Sscore = 8.5;  // 5 3 7
+$Sscore ="a";  // 5 3 7
+
+echo "<h3>Kết quả xếp loại:</h3>";
+if(!is_numeric($Sscore)){
+    echo "Điểm không hợp lệ";
+    exit;
+}
 if ($Sscore >= 8.0) {
     $ranking = "Giỏi";
 } elseif ($Sscore >= 6.5) {
@@ -11,8 +17,6 @@ if ($Sscore >= 8.0) {
 } else {
     $ranking = "Yếu";
 }
-
-echo "<h3>Kết quả xếp loại:</h3>";
 echo "Họ và tên: " . $Sname . "<br>";
 echo "Điểm số: " . $Sscore . "<br>";
 echo "Xếp loại: " . $ranking;
