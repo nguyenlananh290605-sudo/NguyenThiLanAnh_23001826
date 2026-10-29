@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 2: Đặt vé xem phim - Có chọn tên phim</title>
+    <title>Bài 2: Đặt vé xem phim - Dùng Alert</title>
     <!-- Nhúng Vue.js 3 từ CDN -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
@@ -145,20 +145,6 @@
             font-size: 12px;
             margin-top: 4px;
         }
-
-        .confirmation-card {
-            margin-top: 25px;
-            background-color: #e8f8f5;
-            border: 1px solid #a3e4d7;
-            padding: 20px;
-            border-radius: 8px;
-            color: #0e6251;
-        }
-
-        .confirmation-card h3 {
-            margin-top: 0;
-            color: #117a65;
-        }
     </style>
 </head>
 
@@ -169,7 +155,7 @@
 
         <form @submit.prevent="submitForm">
 
-            <!-- Bổ sung: Chọn Tên Phim -->
+            <!-- Chọn Tên Phim -->
             <div class="form-group">
                 <label>Chọn phim:</label>
                 <select v-model="selectedMovie">
@@ -180,13 +166,13 @@
                 </select>
             </div>
 
-            <!-- 1. Nhập họ tên khách hàng bằng v-model.trim -->
+            <!-- Họ tên khách hàng -->
             <div class="form-group">
                 <label>Họ tên khách hàng:</label>
                 <input type="text" v-model.trim="customerName" placeholder="Nhập họ và tên...">
             </div>
 
-            <!-- 2. Chọn suất chiếu bằng select -->
+            <!-- Suất chiếu -->
             <div class="form-group">
                 <label>Suất chiếu:</label>
                 <select v-model="selectedShowtime">
@@ -197,7 +183,7 @@
                 </select>
             </div>
 
-            <!-- 3. Chọn loại vé bằng radio -->
+            <!-- Loại vé -->
             <div class="form-group">
                 <label>Loại vé:</label>
                 <div class="radio-group">
@@ -210,7 +196,7 @@
                 </div>
             </div>
 
-            <!-- 4 & 7. Nhập số lượng vé và nút tăng/giảm -->
+            <!-- Số lượng vé -->
             <div class="form-group">
                 <label>Số lượng vé (1 - 10):</label>
                 <div class="quantity-control">
@@ -223,7 +209,7 @@
                 </div>
             </div>
 
-            <!-- 5. Checkbox chọn combo bắp nước -->
+            <!-- Checkbox combo -->
             <div class="form-group">
                 <div class="checkbox-group">
                     <label>
@@ -232,30 +218,17 @@
                 </div>
             </div>
 
-            <!-- 6. Computed tổng tiền -->
+            <!-- Tổng tiền -->
             <div class="total-price">
                 Tổng tiền: {{ formatCurrency(totalPrice) }}
             </div>
 
-            <!-- 7 & 8. Nút đặt lại và nút đặt vé -->
+            <!-- Nút bấm -->
             <div class="button-group">
                 <button type="button" class="btn-reset" @click="resetForm">Đặt lại</button>
                 <button type="submit" class="btn-submit" :disabled="!isFormValid">Đặt vé</button>
             </div>
         </form>
-
-        <!-- 9. Hiển thị xác nhận có kèm Tên Phim -->
-        <div class="confirmation-card" v-if="isSubmitted">
-            <h3>Xác nhận đặt vé thành công!</h3>
-            <p><strong>Phim:</strong> {{ confirmedData.movie }}</p>
-            <p><strong>Khách hàng:</strong> {{ confirmedData.customerName }}</p>
-            <p><strong>Suất chiếu:</strong> {{ confirmedData.showtime }}</p>
-            <p><strong>Loại vé:</strong> {{ confirmedData.ticketTypeName }} ({{ formatCurrency(confirmedData.unitPrice)
-                }}/vé)</p>
-            <p><strong>Số lượng:</strong> {{ confirmedData.quantity }}</p>
-            <p><strong>Combo bắp nước:</strong> {{ confirmedData.hasCombo ? 'Có (+45.000đ)' : 'Không' }}</p>
-            <p><strong>Tổng thanh toán:</strong> {{ formatCurrency(confirmedData.totalPrice) }}</p>
-        </div>
     </div>
 
     <script>
@@ -264,14 +237,12 @@
         createApp({
             data() {
                 return {
-                    selectedMovie: "",     // Thêm biến lưu tên phim
+                    selectedMovie: "",
                     customerName: "",
                     selectedShowtime: "",
                     ticketType: "normal",
                     quantity: 1,
-                    hasCombo: false,
-                    isSubmitted: false,
-                    confirmedData: {}
+                    hasCombo: false
                 }
             },
             computed: {
@@ -283,7 +254,7 @@
                     return (this.unitPrice * this.quantity) + comboPrice;
                 },
                 isFormValid() {
-                    const isValidMovie = this.selectedMovie !== ""; // Kiểm tra đã chọn phim chưa
+                    const isValidMovie = this.selectedMovie !== "";
                     const isValidName = this.customerName.trim() !== "";
                     const isValidQuantity = this.quantity >= 1 && this.quantity <= 10;
                     const isValidShowtime = this.selectedShowtime !== "";
@@ -304,22 +275,33 @@
                     this.ticketType = "normal";
                     this.quantity = 1;
                     this.hasCombo = false;
-                    this.isSubmitted = false;
-                    this.confirmedData = {};
                 },
+                // Thay vì hiển thị ở dưới, dùng window.alert để bật thông báo nổi
                 submitForm() {
                     if (this.isFormValid) {
-                        this.confirmedData = {
-                            movie: this.selectedMovie, // Truyền tên phim vào kết quả
-                            customerName: this.customerName,
-                            showtime: this.selectedShowtime,
-                            ticketTypeName: this.ticketType === "vip" ? "Vé VIP" : "Vé Thường",
-                            unitPrice: this.unitPrice,
-                            quantity: this.quantity,
-                            hasCombo: this.hasCombo,
-                            totalPrice: this.totalPrice
-                        };
-                        this.isSubmitted = true;
+                        const movieName = this.selectedMovie;
+                        const name = this.customerName;
+                        const showtime = this.selectedShowtime;
+                        const typeName = this.ticketType === "vip" ? "Vé VIP" : "Vé Thường";
+                        const qty = this.quantity;
+                        const comboStr = this.hasCombo ? "Có (+45.000đ)" : "Không";
+                        const totalStr = this.formatCurrency(this.totalPrice);
+
+                        // Tạo nội dung thông báo cho alert
+                        const message =
+                            `🎉 ĐẶT VÉ THÀNH CÔNG!\n\n` +
+                            `- Phim: ${movieName}\n` +
+                            `- Khách hàng: ${name}\n` +
+                            `- Suất chiếu: ${showtime}\n` +
+                            `- Loại vé: ${typeName}\n` +
+                            `- Số lượng: ${qty}\n` +
+                            `- Combo bắp nước: ${comboStr}\n` +
+                            `- Tổng thanh toán: ${totalStr}`;
+
+                        window.alert(message);
+
+                        // Tùy chọn: Sau khi bấm OK trên alert thì reset form luôn
+                        this.resetForm();
                     }
                 },
                 formatCurrency(value) {
