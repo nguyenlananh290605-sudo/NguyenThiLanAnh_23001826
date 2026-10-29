@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 1: Thẻ thông tin sinh viên - Vue.js</title>
+    <!-- Nhúng Vue.js 3 từ CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .student-card {
+            background: #ffffff;
+            width: 380px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #3498db;
+            margin-bottom: 15px;
+        }
+
+        .info-group {
+            text-align: left;
+            margin: 15px 0;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .info-group strong {
+            color: #2c3e50;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .bg-gioi {
+            background-color: #27ae60;
+        }
+
+        .bg-kha {
+            background-color: #2980b9;
+        }
+
+        .bg-tb {
+            background-color: #f39c12;
+        }
+
+        .bg-yeu {
+            background-color: #c0392b;
+        }
+
+        .status-studying {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .status-stopped {
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        .btn-toggle {
+            background-color: #34495e;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+
+        .btn-toggle:hover {
+            background-color: #2c3e50;
+        }
+
+        .intro-box {
+            background-color: #ecf0f1;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app" class="student-card">
+        <!-- Sử dụng v-bind đầy đủ cho src và alt-->
+        <img v-bind:src="student.avatar" v-bind:alt="student.fullName" class="avatar">
+
+        <!-- Hiển thị họ tên bằng {{ }} -->
+        <h2>{{ student.fullName }}</h2>
+
+        <div class="info-group">
+            <p><strong>Mã sinh viên:</strong> {{ student.studentId }}</p>
+
+            <!-- Hiển thị tên lớp bằng v-text -->
+            <p><strong>Lớp:</strong> <span v-text="student.className"></span></p>
+
+            <p><strong>Điểm trung bình:</strong> {{ student.gpa }}</p>
+
+            <!-- Sử dụng v-bind:class đầy đủ để đổi màu xếp loại -->
+            <p>
+                <strong>Xếp loại:</strong>
+                <span class="badge" v-bind:class="xepLoaiClass">{{ xepLoaiText }}</span>
+            </p>
+
+            <!-- Sử dụng v-if và v-else để hiển thị trạng thái -->
+            <p>
+                <strong>Trạng thái:</strong>
+                <span v-if="student.isStudying" class="status-studying">Đang học</span>
+                <span v-else class="status-stopped">Đã nghỉ</span>
+            </p>
+        </div>
+
+        <!-- Sử dụng v-on:click đầy đủ để bắt sự kiện click nút -->
+        <button v-on:click="toggleIntro" class="btn-toggle">
+            {{ showIntro ? 'Ẩn giới thiệu' : 'Hiện giới thiệu' }}
+        </button>
+
+        <!-- Sử dụng v-show để bật/tắt phần giới thiệu -->
+        <div v-show="showIntro" class="intro-box">
+            <p>{{ student.intro }}</p>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    student: {
+                        studentId: "23001826",
+                        fullName: "Nguyễn Thị Lan Anh",
+                        className: "Khoa học Máy tính và Thông tin",
+                        avatar: "anhthe.png",
+                        gpa: 8.7,
+                        isStudying: true,
+                        intro: "Sinh viên chuyên ngành Khoa học máy tính và thông tin, yêu thích lập trình Web và phát triển phần mềm."
+                    },
+                    showIntro: true
+                }
+            },
+            computed: {
+                xepLoaiText() {
+                    const score = this.student.gpa;
+                    if (score >= 8 && score <= 10) return "Giỏi";
+                    if (score >= 6.5) return "Khá";
+                    if (score >= 5) return "Trung bình";
+                    return "Chưa đạt";
+                },
+                xepLoaiClass() {
+                    const score = this.student.gpa;
+                    if (score >= 8 && score <= 10) return "bg-gioi";
+                    if (score >= 6.5) return "bg-kha";
+                    if (score >= 5) return "bg-tb";
+                    return "bg-yeu";
+                }
+            },
+            methods: {
+                toggleIntro() {
+                    this.showIntro = !this.showIntro;
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+
+</html>
