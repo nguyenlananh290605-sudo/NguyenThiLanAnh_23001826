@@ -4,272 +4,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 3: Quản lý công việc cá nhân - ID tự tăng & Thời gian riêng</title>
-    <!-- Nhúng Vue.js 3 từ CDN -->
+    <title>Quản lý công việc cá nhân</title>
+
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+        * {
+            box-sizing: border-box;
         }
 
-        .todo-container {
-            background: #ffffff;
-            width: 520px;
-            padding: 30px;
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 520px;
+            margin: auto;
+            padding: 25px;
+            background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 12px #ccc;
         }
 
         h2 {
             text-align: center;
-            color: #2c3e50;
-            margin-top: 0;
+            color: #333;
         }
 
         .input-group {
             display: flex;
             gap: 10px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .input-group input {
             flex: 1;
-            padding: 10px 12px;
+            min-width: 0;
+            padding: 10px;
             border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
+            border-radius: 5px;
         }
 
-        .input-group input:focus {
-            border-color: #3498db;
+        button {
+            padding: 9px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-        .input-group button {
-            background-color: #3498db;
+        .btn-add {
+            background: #007bff;
             color: white;
-            border: none;
-            padding: 0 16px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
         }
 
-        .input-group button:hover {
-            background-color: #2980b9;
-        }
-
-        .hint-text {
-            font-size: 12px;
-            color: #7f8c8d;
-            margin-bottom: 15px;
-            font-style: italic;
-        }
-
-        /* Bộ lọc trạng thái */
-        .filter-group {
+        .filters {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            background: #ecf0f1;
-            padding: 4px;
-            border-radius: 6px;
+            gap: 5px;
+            margin: 20px 0;
         }
 
-        .filter-btn {
+        .filters button {
             flex: 1;
-            background: transparent;
-            border: none;
-            padding: 6px 0;
-            font-size: 13px;
-            font-weight: 600;
-            color: #7f8c8d;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
+            background: #e9ecef;
+            font-size: 12px;
         }
 
-        .filter-btn.active {
-            background: #ffffff;
-            color: #2c3e50;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        .filters .active {
+            background: #007bff;
+            color: white;
         }
 
-        /* Danh sách công việc */
-        .task-list {
+        ul {
             list-style: none;
             padding: 0;
-            margin: 0 0 20px 0;
-            max-height: 280px;
-            overflow-y: auto;
         }
 
-        .task-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 12px;
-            background: #f9fbfb;
-            border: 1px solid #e1e8e8;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            transition: background 0.2s;
-        }
-
-        .task-item:hover {
-            background: #f1f5f5;
-        }
-
-        .task-left {
+        li {
             display: flex;
             align-items: center;
             gap: 10px;
-            overflow: hidden;
-        }
-
-        /* Style cho ID hiển thị */
-        .task-id {
-            background-color: #34495e;
-            color: white;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 4px;
-            min-width: 22px;
-            text-align: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
         }
 
         .task-content {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .task-text {
-            font-size: 14px;
-            color: #333;
-            word-break: break-word;
-        }
-
-        /* Thời gian tạo riêng hiển thị nhỏ bên dưới */
-        .task-time {
-            font-size: 11px;
-            color: #95a5a6;
-            margin-top: 2px;
+            flex: 1;
+            min-width: 0;
+            overflow-wrap: anywhere;
         }
 
         .completed {
             text-decoration: line-through;
-            color: #95a5a6;
+            color: #999;
+        }
+
+        .task-time {
+            display: block;
+            color: #888;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .task-id {
+            color: #666;
+            font-size: 12px;
         }
 
         .btn-delete {
-            background: transparent;
-            border: none;
-            color: #e74c3c;
-            font-size: 16px;
-            cursor: pointer;
-            padding: 2px 6px;
-            border-radius: 4px;
+            background: #dc3545;
+            color: white;
         }
 
-        .btn-delete:hover {
-            background: #fadbd8;
-        }
-
-        .footer-action {
+        .footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 13px;
-            color: #666;
-            border-top: 1px solid #eee;
+            gap: 10px;
+            border-top: 1px solid #ddd;
             padding-top: 15px;
+            font-size: 13px;
         }
 
-        .btn-clear-done {
-            background: #e67e22;
+        .btn-clear {
+            background: #ff9800;
             color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
         }
 
-        .btn-clear-done:hover {
-            background: #d35400;
-        }
-
-        .empty-message {
+        .empty {
             text-align: center;
-            color: #95a5a6;
-            font-style: italic;
-            padding: 20px 0;
-            font-size: 14px;
+            color: #888;
+            padding: 20px;
         }
     </style>
 </head>
 
 <body>
+    <div id="app" class="container">
+        <h2>QUẢN LÝ CÔNG VIỆC</h2>
 
-    <div id="app" class="todo-container">
-        <h2>Quản Lý Công Việc</h2>
-
-        <!-- Ô nhập liệu -->
+        <!-- Thêm công việc -->
         <div class="input-group">
-            <input type="text" v-model.trim="newTaskText" @keyup.enter="addTask"
-                placeholder="Nhập việc (có thể cách nhau bằng dấu phẩy)...">
-            <button @click="addTask">Thêm</button>
-        </div>
-        <div class="hint-text">💡 Mẹo: Nhập nhiều việc cách nhau bằng dấu phẩy (VD: Viết code, Đi chợ)</div>
+            <input type="text" v-model.trim="tenMoi" @keyup.enter="themCongViec" placeholder="Nhập công việc...">
 
-        <!-- Bộ lọc trạng thái -->
-        <div class="filter-group">
-            <button class="filter-btn" :class="{ active: currentFilter === 'all' }" @click="currentFilter = 'all'">Tất
-                cả</button>
-            <button class="filter-btn" :class="{ active: currentFilter === 'active' }"
-                @click="currentFilter = 'active'">Chưa xong</button>
-            <button class="filter-btn" :class="{ active: currentFilter === 'completed' }"
-                @click="currentFilter = 'completed'">Đã xong</button>
+            <button class="btn-add" @click="themCongViec">
+                Thêm
+            </button>
         </div>
 
-        <!-- Danh sách hiển thị có hiện ID và thời gian riêng -->
-        <ul class="task-list" v-if="filteredTasks.length > 0">
-            <li class="task-item" v-for="task in filteredTasks" :key="task.id">
-                <div class="task-left">
-                    <!-- Hiển thị ID hẳn ra -->
-                    <span class="task-id">#{{ task.id }}</span>
-                    <input type="checkbox" v-model="task.completed">
-                    <div class="task-content">
-                        <span class="task-text" :class="{ completed: task.completed }">
-                            {{ task.text }}
-                        </span>
-                        <!-- Hiển thị thời gian tạo riêng -->
-                        <span class="task-time">🕒 {{ task.createdAt }}</span>
-                    </div>
+        <small>
+            Có thể nhập nhiều công việc cách nhau bằng dấu phẩy.
+        </small>
+
+        <!-- Bộ lọc -->
+        <div class="filters">
+            <button :class="{ active: boLoc === 'all' }" @click="boLoc = 'all'">
+                Tất cả
+            </button>
+
+            <button :class="{ active: boLoc === 'active' }" @click="boLoc = 'active'">
+                Chưa hoàn thành
+            </button>
+
+            <button :class="{ active: boLoc === 'done' }" @click="boLoc = 'done'">
+                Đã hoàn thành
+            </button>
+        </div>
+
+        <!-- Danh sách công việc -->
+        <ul v-if="congViecLoc.length > 0">
+            <li v-for="cv in congViecLoc" :key="cv.id">
+
+                <span class="task-id">
+                    #{{ cv.id }}
+                </span>
+
+                <input type="checkbox" v-model="cv.hoanThanh">
+
+                <div class="task-content">
+                    <span :class="{ completed: cv.hoanThanh }">
+                        {{ cv.ten }}
+                    </span>
+
+                    <small class="task-time">
+                        {{ cv.thoiGian }}
+                    </small>
                 </div>
-                <button class="btn-delete" @click="deleteTask(task.id)" title="Xóa">×</button>
+
+                <button class="btn-delete" @click="xoaCongViec(cv.id)">
+                    Xóa
+                </button>
             </li>
         </ul>
 
-        <div class="empty-message" v-else>
-            {{ emptyMessageText }}
-        </div>
+        <!-- Thông báo danh sách rỗng -->
+        <p v-else class="empty">
+            {{ thongBaoRong }}
+        </p>
 
-        <!-- Thống kê và xóa việc đã xong -->
-        <div class="footer-action">
-            <span>Còn lại: <strong>{{ activeTasksCount }}</strong> / Tổng: {{ totalTasksCount }} việc</span>
-            <button class="btn-clear-done" @click="clearCompletedTasks" v-if="hasCompletedTasks">
-                Xóa việc đã xong
+        <!-- Thống kê -->
+        <div class="footer">
+            <span>
+                Tổng: {{ tongCongViec }}
+                | Chưa xong: {{ chuaHoanThanh }}
+            </span>
+
+            <button class="btn-clear" @click="xoaDaHoanThanh" :disabled="tongCongViec === chuaHoanThanh">
+                Xóa việc đã hoàn thành
             </button>
         </div>
     </div>
@@ -280,82 +225,113 @@
         createApp({
             data() {
                 return {
-                    newTaskText: "",
-                    currentFilter: "all",
-                    nextId: 6, // Biến đếm ID tự tăng tiếp theo (vì có sẵn 5 task mẫu từ 1 đến 5)
-                    tasks: [
-                        { id: 1, text: "Làm bài tập Vue.js Bài 1 & 2", completed: true, createdAt: "14:00 - 15/10/2026" },
-                        { id: 2, text: "Ôn tập kiến thức cấu trúc dữ liệu", completed: false, createdAt: "14:05 - 15/10/2026" },
-                        { id: 3, text: "Hoàn thiện báo cáo thực tập", completed: false, createdAt: "14:10 - 15/10/2026" },
-                        { id: 4, text: "Mua nguyên liệu làm bánh xu xê", completed: false, createdAt: "14:15 - 15/10/2026" },
-                        { id: 5, text: "Luyện tập giải thuật lập trình thi đấu", completed: true, createdAt: "14:20 - 15/10/2026" }
+                    tenMoi: "",
+                    boLoc: "all",
+                    nextId: 4,
+
+                    congViec: [
+                        {
+                            id: 1,
+                            ten: "Làm bài tập Vue.js",
+                            hoanThanh: true,
+                            thoiGian: "08:00"
+                        },
+                        {
+                            id: 2,
+                            ten: "Ôn tập JavaScript",
+                            hoanThanh: false,
+                            thoiGian: "09:00"
+                        },
+                        {
+                            id: 3,
+                            ten: "Đọc tài liệu",
+                            hoanThanh: false,
+                            thoiGian: "10:00"
+                        }
                     ]
-                }
+                };
             },
+
             computed: {
-                totalTasksCount() {
-                    return this.tasks.length;
+                tongCongViec() {
+                    return this.congViec.length;
                 },
-                activeTasksCount() {
-                    return this.tasks.filter(task => !task.completed).length;
+
+                chuaHoanThanh() {
+                    return this.congViec.filter(
+                        cv => !cv.hoanThanh
+                    ).length;
                 },
-                hasCompletedTasks() {
-                    return this.tasks.some(task => task.completed);
-                },
-                filteredTasks() {
-                    if (this.currentFilter === "active") {
-                        return this.tasks.filter(task => !task.completed);
-                    } else if (this.currentFilter === "completed") {
-                        return this.tasks.filter(task => task.completed);
+
+                congViecLoc() {
+                    if (this.boLoc === "active") {
+                        return this.congViec.filter(
+                            cv => !cv.hoanThanh
+                        );
                     }
-                    return this.tasks;
+
+                    if (this.boLoc === "done") {
+                        return this.congViec.filter(
+                            cv => cv.hoanThanh
+                        );
+                    }
+
+                    return this.congViec;
                 },
-                emptyMessageText() {
-                    if (this.tasks.length === 0) return "Danh sách công việc trống!";
-                    if (this.currentFilter === "active") return "Tuyệt vời! Không còn việc nào chưa hoàn thành.";
-                    if (this.currentFilter === "completed") return "Chưa có công việc nào hoàn thành.";
-                    return "Không tìm thấy công việc phù hợp.";
+
+                thongBaoRong() {
+                    if (this.congViec.length === 0) {
+                        return "Danh sách công việc trống!";
+                    }
+
+                    if (this.boLoc === "active") {
+                        return "Không còn công việc chưa hoàn thành.";
+                    }
+
+                    if (this.boLoc === "done") {
+                        return "Chưa có công việc nào hoàn thành.";
+                    }
+
+                    return "Không có công việc.";
                 }
             },
+
             methods: {
-                // Hàm lấy định dạng thời gian hiện tại (Giờ:Phút - Ngày/Tháng/Năm)
-                getCurrentTime() {
-                    const now = new Date();
-                    const hours = String(now.getHours()).padStart(2, '0');
-                    const minutes = String(now.getMinutes()).padStart(2, '0');
-                    const day = String(now.getDate()).padStart(2, '0');
-                    const month = String(now.getMonth() + 1).padStart(2, '0');
-                    const year = now.getFullYear();
-                    return `${hours}:${minutes} - ${day}/${month}/${year}`;
-                },
-                // Thêm công việc với ID tự tăng và thời gian tạo riêng
-                addTask() {
-                    if (this.newTaskText === "") return;
+                themCongViec() {
+                    if (!this.tenMoi.trim()) return;
 
-                    const rawTasks = this.newTaskText.split(',');
+                    const danhSach = this.tenMoi.split(",");
 
-                    rawTasks.forEach(item => {
-                        const text = item.trim();
-                        if (text !== "") {
-                            this.tasks.push({
-                                id: this.nextId++,         // Gán ID hiện tại xong tự động tăng lên 1 cho lần sau
-                                text: text,
-                                completed: false,
-                                createdAt: this.getCurrentTime() // Lưu thời gian tạo riêng biệt
+                    danhSach.forEach(ten => {
+                        ten = ten.trim();
+
+                        if (ten !== "") {
+                            this.congViec.push({
+                                id: this.nextId++,
+                                ten: ten,
+                                hoanThanh: false,
+                                thoiGian: new Date()
+                                    .toLocaleString("vi-VN")
                             });
                         }
                     });
 
-                    this.newTaskText = ""; // Reset ô input
+                    this.tenMoi = "";
                 },
-                deleteTask(id) {
-                    this.tasks = this.tasks.filter(task => task.id !== id);
+
+                xoaCongViec(id) {
+                    this.congViec = this.congViec.filter(
+                        cv => cv.id !== id
+                    );
                 },
-                clearCompletedTasks() {
-                    this.tasks = this.tasks.filter(task => !task.completed);
+
+                xoaDaHoanThanh() {
+                    this.congViec = this.congViec.filter(
+                        cv => !cv.hoanThanh
+                    );
                 }
             }
-        }).mount('#app');
+        }).mount("#app");
     </script>
 </body>
 
