@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buổi 7 - Bài tập thực hành Vue 3</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 40px 16px; font-family: Arial, sans-serif; background: #f0f2f5; color: #243247; }
+        main { max-width: 1000px; margin: auto; }
+        header { margin-bottom: 28px; }
+        h1 { margin: 0 0 12px; font-size: 28px; }
+        header p { color: #526174; line-height: 1.6; }
+        nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+        .exercise { display: flex; flex-direction: column; align-items: flex-start; padding: 24px; background: white; border-radius: 12px; box-shadow: 0 3px 12px #0000000d; }
+        .number { padding: 6px 12px; border-radius: 20px; background: #eaf1fb; color: #1754a4; font-size: 14px; font-weight: bold; }
+        h2 { font-size: 20px; line-height: 1.4; margin: 18px 0 10px; }
+        .exercise p { color: #526174; line-height: 1.6; margin: 0 0 24px; }
+        a { display: inline-block; margin-top: auto; padding: 11px 18px; border-radius: 6px; background: #1765cc; color: white; text-decoration: none; }
+        a:hover { background: #1253aa; }
+        a:focus-visible { outline: 3px solid #8db9f3; outline-offset: 3px; }
+        @media (max-width: 750px) { nav { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <main>
+        <header>
+            <h1>Buổi 7: Bài tập thực hành Vue 3</h1>
+            <p>Chọn bài tập để xem và thực hành.</p>
+        </header>
+        <nav aria-label="Danh sách bài tập">
+            <article class="exercise">
+                <span class="number">Bài 1</span>
+                <h2>Quản lý sản phẩm</h2>
+                <p>Danh sách sản phẩm có tìm kiếm, lọc, sắp xếp và thống kê tồn kho.</p>
+                <a href="./bai1.html">Mở Bài 1</a>
+            </article>
+            <article class="exercise">
+                <span class="number">Bài 2</span>
+                <h2>Danh mục bằng component</h2>
+                <p>Thẻ sản phẩm sử dụng props, có trạng thái bật/tắt mô tả riêng.</p>
+                <a href="./bai2.html">Mở Bài 2</a>
+            </article>
+            <article class="exercise">
+                <span class="number">Bài 3</span>
+                <h2>Giỏ hàng với props và $emit</h2>
+                <p>Tăng, giảm số lượng, xóa sản phẩm và tính tổng tiền giỏ hàng.</p>
+                <a href="./bai3.html">Mở Bài 3</a>
+            </article>
+        </nav>
+    </main>
+</body>
+</html>

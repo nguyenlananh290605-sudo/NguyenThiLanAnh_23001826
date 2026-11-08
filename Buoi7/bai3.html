@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 3 - Giỏ hàng với props và $emit</title>
+    <style>
+        * { box-sizing: border-box; }
+        [v-cloak] { display: none; }
+        body { margin: 0; padding: 30px 16px; font-family: Arial, sans-serif; background: #f0f2f5; color: #243247; }
+        .container { max-width: 1000px; margin: auto; }
+        .panel { padding: 24px; margin-bottom: 20px; background: white; border-radius: 12px; box-shadow: 0 3px 12px #0000000d; }
+        h1 { margin: 0 0 12px; font-size: 26px; }
+        .intro { margin-bottom: 0; color: #526174; line-height: 1.6; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+        caption { text-align: left; font-weight: bold; padding-bottom: 16px; }
+        th, td { padding: 16px 12px; text-align: left; border-bottom: 1px solid #e3e8ee; }
+        thead th { background: #f5f7fa; }
+        tbody th { font-weight: normal; }
+        button { border: 0; border-radius: 6px; padding: 9px 14px; cursor: pointer; font: inherit; }
+        button:focus-visible { outline: 3px solid #8db9f3; outline-offset: 2px; }
+        button:disabled { background: #e0e4ea; color: #727b88; cursor: not-allowed; }
+        .quantity-controls { display: flex; align-items: center; gap: 10px; }
+        .quantity-button { width: 34px; height: 34px; padding: 0; background: #eaf1fb; color: #1754a4; font-weight: bold; }
+        .quantity { min-width: 24px; text-align: center; }
+        .delete-button { background: #fde7eb; color: #a32132; }
+        .line-total { font-weight: bold; }
+        .summary { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding-top: 24px; }
+        .total { color: #1765cc; }
+        .empty { text-align: center; padding: 36px 12px; color: #526174; font-size: 20px; }
+        .error { color: #a32132; }
+        .note { color: #526174; font-size: 14px; margin: 20px 0 0; line-height: 1.6; }
+        @media (max-width: 600px) { .panel { padding: 18px; } h1 { font-size: 23px; } }
+    </style>
+</head>
+<body>
+    <main id="app" class="container" v-cloak>
+        <header class="panel">
+            <h1>Bài 3: Giỏ hàng với props và $emit</h1>
+            <p class="intro">Điều chỉnh số lượng hoặc xóa sản phẩm khỏi giỏ hàng. Số lượng mỗi sản phẩm từ 1 đến 99.</p>
+        </header>
+
+        <section class="panel" aria-label="Giỏ hàng">
+            <div v-if="gioHang.length > 0" class="table-wrap">
+                <table>
+                    <caption>Sản phẩm trong giỏ hàng</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Tên sản phẩm</th>
+                            <th scope="col">Đơn giá</th>
+                            <th scope="col">Số lượng</th>
+                            <th scope="col">Thành tiền</th>
+                            <th scope="col">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dùng is="vue:..." để component có gốc tr nằm đúng trong bảng HTML. -->
+                        <tr is="vue:dong-gio-hang"
+                            v-for="sp in gioHang"
+                            :key="sp.id"
+                            :id="sp.id"
+                            :ten="sp.ten"
+                            :don-gia="sp.donGia"
+                            :so-luong="sp.soLuong"
+                            @doi-so-luong="capNhatSoLuong"
+                            @yeu-cau-xoa="xoaSanPham"
+                        ></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p v-else class="empty" role="status">Giỏ hàng trống</p>
+
+            <p v-if="thongBaoLoi" class="error" role="alert">{{ thongBaoLoi }}</p>
+            <div class="summary" aria-live="polite">
+                <span>Tổng số lượng: <strong>{{ tongSoLuong }}</strong></span>
+                <span>Tổng tiền: <strong class="total">{{ dinhDangTien(tongTien) }}</strong></span>
+            </div>
+            <p class="note">Nút giảm bị khóa khi số lượng là 1; nút tăng bị khóa khi số lượng là 99.</p>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="./components/DongGioHang.js"></script>
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    gioHang: [
+                        { id: 1, ten: 'Bút bi', donGia: 5000, soLuong: 2 },
+                        { id: 2, ten: 'Vở ô ly', donGia: 12000, soLuong: 3 }
+                    ],
+                    thongBaoLoi: ''
+                };
+            },
+
+            computed: {
+                tongSoLuong() {
+                    return this.gioHang.reduce((tong, sp) => tong + sp.soLuong, 0);
+                },
+                tongTien() {
+                    return this.gioHang.reduce((tong, sp) => tong + sp.donGia * sp.soLuong, 0);
+                }
+            },
+
+            methods: {
+                dinhDangTien(soTien) {
+                    return soTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                },
+                capNhatSoLuong(id, soLuongMoi) {
+                    this.thongBaoLoi = '';
+                    const sanPham = this.gioHang.find(sp => sp.id === id);
+                    if (!sanPham) {
+                        this.thongBaoLoi = 'Không tìm thấy sản phẩm trong giỏ hàng.';
+                        return;
+                    }
+                    if (!Number.isInteger(soLuongMoi) || soLuongMoi < 1 || soLuongMoi > 99) {
+                        this.thongBaoLoi = 'Số lượng phải là số nguyên từ 1 đến 99.';
+                        return;
+                    }
+                    // Chỉ cha cập nhật dữ liệu gốc sau khi kiểm tra sự kiện từ con.
+                    sanPham.soLuong = soLuongMoi;
+                },
+                xoaSanPham(id) {
+                    this.thongBaoLoi = '';
+                    if (!this.gioHang.some(sp => sp.id === id)) {
+                        this.thongBaoLoi = 'Không tìm thấy sản phẩm cần xóa.';
+                        return;
+                    }
+                    this.gioHang = this.gioHang.filter(sp => sp.id !== id);
+                }
+            }
+        });
+
+        app.component('dong-gio-hang', DongGioHang);
+        app.mount('#app');
+    </script>
+</body>
+</html>
