@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buổi 8 - Quản lý sản phẩm PHP và Vue</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <main id="app" class="container" v-cloak>
+        <header class="panel">
+            <h1>Buổi 8: Quản lý sản phẩm</h1>
+            <p>Thêm, sửa và xóa sản phẩm với PHP, MySQL và Vue 3.</p>
+        </header>
+
+        <p v-if="loi" class="message error" role="alert">{{ loi }}</p>
+        <p v-if="thongBao" class="message success" role="status">{{ thongBao }}</p>
+
+        <section class="panel" aria-labelledby="form-title">
+            <h2 id="form-title">{{ idDangSua === null ? 'Thêm sản phẩm mới' : 'Sửa sản phẩm #' + idDangSua }}</h2>
+            <form @submit.prevent="luuSanPham" novalidate>
+                <fieldset :disabled="dangXuLy">
+                    <div class="form-grid">
+                        <label for="name">Tên sản phẩm
+                            <input id="name" type="text" v-model="bieuMau.name" required placeholder="Ví dụ: Bút bi">
+                        </label>
+                        <label for="price">Đơn giá (đồng)
+                            <input id="price" type="number" v-model="bieuMau.price" min="1" max="2147483647" step="1" required>
+                        </label>
+                        <label for="stock">Số lượng tồn
+                            <input id="stock" type="number" v-model="bieuMau.stock" min="0" max="2147483647" step="1" required>
+                        </label>
+                    </div>
+                    <div class="actions">
+                        <button type="submit">{{ dangXuLy ? 'Đang xử lý…' : 'Lưu' }}</button>
+                        <button v-if="idDangSua !== null" type="button" class="secondary" @click="huySua">Hủy sửa</button>
+                    </div>
+                </fieldset>
+            </form>
+        </section>
+
+        <section class="panel" aria-labelledby="list-title" :aria-busy="dangXuLy">
+            <div class="section-heading">
+                <h2 id="list-title">Danh sách sản phẩm ({{ sanPham.length }})</h2>
+                <button type="button" class="secondary" :disabled="dangXuLy" @click="lamMoi">Tải lại danh sách</button>
+            </div>
+            <p v-if="dangXuLy" role="status">Đang tải hoặc cập nhật dữ liệu…</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th><th scope="col">Tên sản phẩm</th>
+                            <th scope="col">Đơn giá</th><th scope="col">Số lượng tồn</th>
+                            <th scope="col">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="sp in sanPham" :key="sp.id">
+                            <td>{{ sp.id }}</td><td class="product-name">{{ sp.name }}</td>
+                            <td>{{ dinhDangTien(sp.price) }}</td><td>{{ sp.stock }}</td>
+                            <td>
+                                <div class="row-actions">
+                                    <button type="button" class="secondary" :disabled="dangXuLy" @click="chonSua(sp)" :aria-label="'Sửa ' + sp.name">Sửa</button>
+                                    <button type="button" class="danger" :disabled="dangXuLy" @click="xoaSanPham(sp)" :aria-label="'Xóa ' + sp.name">Xóa</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-if="!dangXuLy && daTai && sanPham.length === 0">
+                            <td colspan="5" class="empty">Chưa có sản phẩm. Hãy thêm sản phẩm mới.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="./js/app.js"></script>
+</body>
+</html>
