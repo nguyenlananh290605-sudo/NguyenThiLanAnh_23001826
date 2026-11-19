@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Buổi 9 - Quản lý sản phẩm</title><link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+<main id="app" class="container" v-cloak>
+    <header class="panel"><h1>Buổi 9: Quản lý sản phẩm</h1><p>Upload ảnh và phân trang với PHP, MySQL và Vue 3.</p></header>
+    <p v-if="loi" class="message error" role="alert">{{ loi }}</p>
+    <p v-if="thongBao" class="message success" role="status">{{ thongBao }}</p>
+    <div v-if="uploadCho" class="panel" role="alert">
+        <p>Thông tin sản phẩm #{{ uploadCho.id }} đã được lưu. Bạn có thể thử upload ảnh lại.</p>
+        <div class="actions"><button :disabled="dangXuLy" @click="thuLaiUpload">Thử upload lại</button>
+        <button class="secondary" :disabled="dangXuLy" @click="uploadCho = null; huySua()">Bỏ qua ảnh</button></div>
+    </div>
+    <section class="panel">
+        <h2>{{ idDangSua === null ? 'Thêm sản phẩm mới' : 'Sửa sản phẩm #' + idDangSua }}</h2>
+        <form @submit.prevent="luuSanPham" novalidate><fieldset :disabled="dangXuLy || !!uploadCho">
+            <div class="form-grid">
+                <label>Tên sản phẩm<input type="text" v-model="bieuMau.name" required></label>
+                <label>Đơn giá (đồng)<input type="number" v-model="bieuMau.price" min="1" step="1" required></label>
+                <label>Số lượng tồn<input type="number" v-model="bieuMau.stock" min="0" step="1" required></label>
+            </div>
+            <label class="image-label">Ảnh sản phẩm (JPG, JPEG, PNG; tối đa 2 MB)
+                <input ref="image" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" @change="chonAnh">
+            </label>
+            <img v-if="anhXemTruoc || anhCu" :src="anhXemTruoc || anhCu" class="preview" alt="Ảnh xem trước sản phẩm">
+            <p v-else>Chưa có ảnh</p>
+            <div class="actions"><button type="submit">Lưu</button>
+                <button v-if="idDangSua !== null" type="button" class="secondary" @click="huySua">Hủy sửa</button></div>
+        </fieldset></form>
+    </section>
+    <section class="panel" :aria-busy="dangXuLy">
+        <div class="section-heading"><h2>Danh sách sản phẩm</h2><button class="secondary" :disabled="dangXuLy" @click="lamMoi()">Tải lại danh sách</button></div>
+        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Ảnh</th><th>Tên sản phẩm</th><th>Đơn giá</th><th>Số lượng tồn</th><th>Thao tác</th></tr></thead>
+            <tbody><tr v-for="sp in sanPham" :key="sp.id">
+                <td>{{ sp.id }}</td><td><img v-if="sp.image" :src="sp.image" class="thumbnail" :alt="'Ảnh ' + sp.name"><span v-else>Chưa có ảnh</span></td>
+                <td class="product-name">{{ sp.name }}</td><td>{{ dinhDangTien(sp.price) }}</td><td>{{ sp.stock }}</td>
+                <td><div class="row-actions"><button class="secondary" :disabled="dangXuLy || !!uploadCho" @click="chonSua(sp)">Sửa</button><button class="danger" :disabled="dangXuLy || !!uploadCho" @click="xoaSanPham(sp)">Xóa</button></div></td>
+            </tr><tr v-if="!dangXuLy && daTai && sanPham.length === 0"><td colspan="6" class="empty">Chưa có sản phẩm</td></tr></tbody>
+        </table></div>
+        <div class="pagination"><button class="secondary" :disabled="dangXuLy || trang <= 1" @click="lamMoi(trang - 1)">Trước</button>
+            <span>Trang {{ trang }} / {{ tongTrang }} — Tổng {{ tong }} sản phẩm</span>
+            <button class="secondary" :disabled="dangXuLy || trang >= tongTrang" @click="lamMoi(trang + 1)">Sau</button></div>
+    </section>
+</main>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script><script src="./js/app.js"></script>
+</body></html>
